@@ -1,5 +1,20 @@
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import webScrap.Biography;
+import webScrap.FighterStats;
+
+import java.io.IOException;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("UFCAPI");
+        try {
+            Document doc = Jsoup.connect("https://www.ufc.com/athlete/weili-zhang").get();
+            FighterStats fighter = new FighterStats(doc);
+            fighter.buildFighter();
+
+        }catch (IOException e){
+            System.out.println(e);
+        }
+
     }
 }
