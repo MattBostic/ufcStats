@@ -14,6 +14,7 @@ public class Biography implements Populatefields{
     boolean isActive;
     String hometown;
     String trainsAt;
+    String fightingStyle;
     int Age;
     Double heightInInches;
     Double weight;
@@ -39,7 +40,7 @@ public class Biography implements Populatefields{
                 "c-hero__headline-suffix tz-change-inner").first().text().split(" • ")[1]);
     }
 
-    public void populateParser(Element element){
+    private void populateParser(Element element){
         String label = element.getElementsByClass("c-bio__label").text();
         String text = element.getElementsByClass("c-bio__text").text();
         toString();
@@ -50,6 +51,12 @@ public class Biography implements Populatefields{
                 break;
             case "Hometown":
                 setHometown(text);
+                break;
+            case "Trains at":
+                setTrainsAt(text);
+                break;
+            case "Fighting style":
+                setFightingStyle(text);
                 break;
             case "Age":
                 setAge(Integer.parseInt(text));
@@ -85,6 +92,7 @@ public class Biography implements Populatefields{
                 ", \nisActive=" + isActive +
                 ", \nhometown='" + hometown + '\'' +
                 ", \ntrainsAt='" + trainsAt + '\'' +
+                ", \nfighting style='" + fightingStyle + '\'' +
                 ", \nAge=" + Age +
                 ", \nheightInInches=" + heightInInches +
                 ", \nweight=" + weight +
@@ -148,6 +156,14 @@ public class Biography implements Populatefields{
 
     public void setTrainsAt(String trainsAt) {
         this.trainsAt = trainsAt;
+    }
+
+    public String getFightingStyle() {
+        return fightingStyle;
+    }
+
+    public void setFightingStyle(String fightingStyle) {
+        this.fightingStyle = fightingStyle;
     }
 
     public int getAge() {

@@ -8,7 +8,7 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) {
         try {
-            Document doc = Jsoup.connect("https://www.ufc.com/athlete/weili-zhang").get();
+            Document doc = Jsoup.connect("https://www.ufc.com/athlete/valentina-shevchenko").get();
             FighterStats fighter = new FighterStats(doc);
             fighter.buildFighter();
 

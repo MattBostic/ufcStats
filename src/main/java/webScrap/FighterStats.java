@@ -19,7 +19,8 @@ public class FighterStats {
 
     public void buildFighter(){
         bio = new Biography(doc);
-        System.out.println(bio.toString());
+        stats = new Statistics(doc);
+        System.out.println(stats.toString());
     }
 
 }

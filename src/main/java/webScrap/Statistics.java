@@ -1,13 +1,16 @@
 package webScrap;
 
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 public class Statistics implements Populatefields{
-    Boolean isChampion;
+    Document doc;
     int fightWinStreak;
     int sigStrikesLanded;
     int sigStrikesAttempted;
     Double strikingAccuracy;
-    int takeDownsLanded;
-    int takeDownAttempts;
+    int takedownsLanded;
+    int takedownAttempts;
     Double grapplingAccuracy;
 
     Double sigStrikesLanded_PerMin;
@@ -17,7 +20,7 @@ public class Statistics implements Populatefields{
     Double sigStrikeDefense;
     Double takedownDefense;
     Double knockdownRatio;
-    Double avrgFightTime;
+    String avrgFightTime;
 
     //SigStrikesByPosition
     int sigStrikesPositionStanding;
@@ -34,46 +37,160 @@ public class Statistics implements Populatefields{
     int winsByDecision;
     int winsBySubmission;
 
-    public Statistics() {
+    public Statistics(Document doc) {
+        this.doc = doc;
+        populateFields();
+    }
+
+    @Override
+    public void populateFields() {
+        doc.getElementsByClass("c-stat-3bar__group").forEach(this::winsByAndSigStrikePositionBuild);
+        doc.getElementsByClass("c-stat-compare__group-1").forEach(this::group1Build);
+        doc.getElementsByClass("c-stat-compare__group-2").forEach(this::group2Build);
+        setSigStrikesBuild();
+        setTakedownBuild();
+        setFightWinStreak(Integer.parseInt(
+                doc.getElementsByClass("c-record__promoted-figure").first().text()));
+
+    }
+
+    private void setSigStrikesBuild(){
+        setSigStrikesLandedHead(Integer.parseInt(doc.getElementById("e-stat-body_x5F__x5F_head_value").text()));
+        setSigStrikesLandedBody(Integer.parseInt(doc.getElementById("e-stat-body_x5F__x5F_body_value").text()));
+        setSigStrikesLandedLeg(Integer.parseInt(doc.getElementById("e-stat-body_x5F__x5F_leg_value").text()));
+
+        setSigStrikesLanded(
+                getSigStrikesLandedBody() +
+                getSigStrikesLandedHead() +
+                getSigStrikesLandedLeg()
+        );
+        setSigStrikesAttempted(Integer.parseInt(
+                doc.getElementsByClass("c-overlap__stats-value").get(1).text()));
+
+        setStrikingAccuracy((double)getSigStrikesLanded() / (double) getSigStrikesAttempted() * 100);
+    }
+
+    private void setTakedownBuild(){
+        setTakedownsLanded(Integer.parseInt(
+                doc.getElementsByClass("c-overlap__stats-value").get(2).text()));
+        setTakedownAttempts(Integer.parseInt(
+                doc.getElementsByClass("c-overlap__stats-value").get(3).text()));
+        setGrapplingAccuracy((double)getTakeDownsLanded() / (double)getTakeDownAttempts() * 100);
+
+
+    }
+
+    private void group1Build(Element element){
+        String label = element.getElementsByClass("c-stat-compare__label").text();
+        String text = element.getElementsByClass("c-stat-compare__number").text();
+
+        //TODO: Rather than parsing double for each case needed we could
+        // check if the value passed needs to be stripped before parsing. That will
+        // reduce that amount of DRY lines of code. Come back and brainstorm a better
+        // process for binding.
+
+        switch (label){
+            case "Sig. Str. Landed":
+                setSigStrikesLanded_PerMin(Double.parseDouble(text));
+                break;
+            case "Takedown avg":
+                setTakeDownAvrgPer15Min(Double.parseDouble(text));
+                break;
+            case "Sig. Str. Defense":
+                 setSigStrikeDefense(Double.parseDouble(
+                         text.substring(0,text.indexOf(' '))));
+                break;
+            case "Knockdown Ratio":
+                setKnockdownRatio(Double.parseDouble(text));
+                break;
+            default:
+                System.out.printf("Field: %s is not mapped.");
+        }
+
+    }
+
+    private void group2Build(Element element){
+        String label = element.getElementsByClass("c-stat-compare__label").text();
+        String text = element.getElementsByClass("c-stat-compare__number").text();
+
+
+        switch (label) {
+            case "Sig. Str. Absorbed":
+                setSigStrikesAbsorbed_PerMin(Double.parseDouble(text));
+                break;
+            case "Submission avg":
+                setSubmissionAvrgPer15Min(Double.parseDouble(text));
+                break;
+            case "Takedown Defense":
+                setTakedownDefense(Double.parseDouble(
+                        text.substring(0,text.indexOf(' '))));
+                break;
+            case "Average fight time":
+                setAvrgFightTime(text);
+                break;
+        }
+    }
+
+    private void winsByAndSigStrikePositionBuild(Element element){
+        String label = element.getElementsByClass("c-stat-3bar__label").text();
+        String text = element.getElementsByClass("c-stat-3bar__value").text();
+
+        // Remove percentages and parses String to int.
+        int numericVersion = Integer.parseInt(
+                text.substring(0,text.indexOf(' ')));
+
+        switch (label){
+            case "Standing":
+                setSigStrikesPositionStanding(numericVersion);
+                break;
+            case "Clinch":
+                setSigStrikesPositionClinch(numericVersion);
+                break;
+            case "Ground":
+                setSigStrikesPositionGround(numericVersion);
+                break;
+            case "KO/TKO":
+                setWinsByKoTko(numericVersion);
+                break;
+            case "DEC":
+                setWinsByDecision(numericVersion);
+                break;
+            case "SUB":
+                setWinsBySubmission(numericVersion);
+                break;
+            default:
+                System.out.printf("Field not found: %s", label);
+        }
     }
 
     @Override
     public String toString() {
-        return "Statistics{" +
-                "isChampion=" + isChampion +
-                ", fightWinStreak=" + fightWinStreak +
-                ", sigStrikesLanded=" + sigStrikesLanded +
-                ", sigStrikesAttempted=" + sigStrikesAttempted +
-                ", strikingAccuracy=" + strikingAccuracy +
-                ", takeDownsLanded=" + takeDownsLanded +
-                ", takeDownAttempts=" + takeDownAttempts +
-                ", grapplingAccuracy=" + grapplingAccuracy +
-                ", sigStrikesLanded_PerMin=" + sigStrikesLanded_PerMin +
-                ", sigStrikesAbsorbed_PerMin=" + sigStrikesAbsorbed_PerMin +
-                ", takeDownAvrgPer15Min=" + takeDownAvrgPer15Min +
-                ", submissionAvrgPer15Min=" + submissionAvrgPer15Min +
-                ", sigStrikeDefense=" + sigStrikeDefense +
-                ", takedownDefense=" + takedownDefense +
-                ", knockdownRatio=" + knockdownRatio +
-                ", avrgFightTime=" + avrgFightTime +
-                ", sigStrikesPositionStanding=" + sigStrikesPositionStanding +
-                ", sigStrikesPositionClinch=" + sigStrikesPositionClinch +
-                ", sigStrikesPositionGround=" + sigStrikesPositionGround +
-                ", sigStrikesLandedHead=" + sigStrikesLandedHead +
-                ", sigStrikesLandedBody=" + sigStrikesLandedBody +
-                ", sigStrikesLandedLeg=" + sigStrikesLandedLeg +
-                ", winsByKoTko=" + winsByKoTko +
-                ", winsByDecision=" + winsByDecision +
-                ", winsBySubmission=" + winsBySubmission +
-                '}';
-    }
-
-    public Boolean getChampion() {
-        return isChampion;
-    }
-
-    public void setChampion(Boolean champion) {
-        isChampion = champion;
+        return "Statistics {" +
+                " \nfightWinStreak=" + fightWinStreak +
+                ", \nsigStrikesLanded=" + sigStrikesLanded +
+                ", \nsigStrikesAttempted=" + sigStrikesAttempted +
+                ", \nstrikingAccuracy=" + strikingAccuracy +
+                ", \ntakeDownsLanded=" + takedownsLanded +
+                ", \ntakeDownAttempts=" + takedownAttempts +
+                ", \ngrapplingAccuracy=" + grapplingAccuracy +
+                ", \nsigStrikesLanded_PerMin=" + sigStrikesLanded_PerMin +
+                ", \nsigStrikesAbsorbed_PerMin=" + sigStrikesAbsorbed_PerMin +
+                ", \ntakeDownAvrgPer15Min=" + takeDownAvrgPer15Min +
+                ", \nsubmissionAvrgPer15Min=" + submissionAvrgPer15Min +
+                ", \nsigStrikeDefense=" + sigStrikeDefense +
+                ", \ntakedownDefense=" + takedownDefense +
+                ", \nknockdownRatio=" + knockdownRatio +
+                ", \navrgFightTime=" + avrgFightTime +
+                ", \nsigStrikesPositionStanding=" + sigStrikesPositionStanding +
+                ", \nsigStrikesPositionClinch=" + sigStrikesPositionClinch +
+                ", \nsigStrikesPositionGround=" + sigStrikesPositionGround +
+                ", \nsigStrikesLandedHead=" + sigStrikesLandedHead +
+                ", \nsigStrikesLandedBody=" + sigStrikesLandedBody +
+                ", \nsigStrikesLandedLeg=" + sigStrikesLandedLeg +
+                ", \nwinsByKoTko=" + winsByKoTko +
+                ", \nwinsByDecision=" + winsByDecision +
+                ", \nwinsBySubmission=" + winsBySubmission +
+                "\n}";
     }
 
     public int getFightWinStreak() {
@@ -109,19 +226,19 @@ public class Statistics implements Populatefields{
     }
 
     public int getTakeDownsLanded() {
-        return takeDownsLanded;
+        return takedownsLanded;
     }
 
-    public void setTakeDownsLanded(int takeDownsLanded) {
-        this.takeDownsLanded = takeDownsLanded;
+    public void setTakedownsLanded(int takedownsLanded) {
+        this.takedownsLanded = takedownsLanded;
     }
 
     public int getTakeDownAttempts() {
-        return takeDownAttempts;
+        return takedownAttempts;
     }
 
-    public void setTakeDownAttempts(int takeDownAttempts) {
-        this.takeDownAttempts = takeDownAttempts;
+    public void setTakedownAttempts(int takedownAttempts) {
+        this.takedownAttempts = takedownAttempts;
     }
 
     public Double getGrapplingAccuracy() {
@@ -188,11 +305,11 @@ public class Statistics implements Populatefields{
         this.knockdownRatio = knockdownRatio;
     }
 
-    public Double getAvrgFightTime() {
+    public String getAvrgFightTime() {
         return avrgFightTime;
     }
 
-    public void setAvrgFightTime(Double avrgFightTime) {
+    public void setAvrgFightTime(String avrgFightTime) {
         this.avrgFightTime = avrgFightTime;
     }
 
