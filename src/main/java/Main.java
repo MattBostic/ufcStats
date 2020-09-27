@@ -1,20 +1,20 @@
+import Athlete.AthleteCareer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import webScrap.Biography;
-import webScrap.FighterStats;
 
 import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) {
-        try {
-            Document doc = Jsoup.connect("https://www.ufc.com/athlete/valentina-shevchenko").get();
-            FighterStats fighter = new FighterStats(doc);
-            fighter.buildFighter();
+    public static void main(String[] args) throws IOException {
 
-        }catch (IOException e){
-            System.out.println(e);
-        }
+        Document doc = Jsoup.connect("https://www.ufc.com/athlete/alexander-volkanovski").get();
+
+//        var eventParser = new EventParser(doc);
+//        eventParser.getEventSet().forEach(System.out::println);
+
+        AthleteCareer athleteCareer = new AthleteCareer(doc);
+        System.out.println(athleteCareer.toString());
+
 
     }
 }

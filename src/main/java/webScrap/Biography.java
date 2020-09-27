@@ -6,21 +6,21 @@ import org.jsoup.nodes.Element;
 import java.io.IOException;
 
 public class Biography implements Populatefields{
-    Document doc;
-    String name;
-    String nickname;
-    String record;
-    String division;
-    boolean isActive;
-    String hometown;
-    String trainsAt;
-    String fightingStyle;
-    int Age;
-    Double heightInInches;
-    Double weight;
-    String octagonDebut;
-    Double reachInInches;
-    Double legReach;
+    private Document doc;
+    private String name;
+    private String nickname;
+    private String record;
+    private String division;
+    private boolean isActive;
+    private String hometown;
+    private String trainsAt;
+    private String fightingStyle;
+    private int Age;
+    private Double heightInInches;
+    private Double weight;
+    private String octagonDebut;
+    private Double reachInInches;
+    private Double legReach;
 
     public Biography(Document doc) {
         this.doc = doc;
@@ -43,7 +43,6 @@ public class Biography implements Populatefields{
     private void populateParser(Element element){
         String label = element.getElementsByClass("c-bio__label").text();
         String text = element.getElementsByClass("c-bio__text").text();
-        toString();
         switch (label) {
 
             case "Status":
@@ -102,59 +101,59 @@ public class Biography implements Populatefields{
                 '}';
     }
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
 
-    public String getNickname() {
+    String getNickname() {
         return nickname;
     }
 
-    public void setNickname(String nickname) {
+    private void setNickname(String nickname) {
         this.nickname = nickname;
     }
 
-    public String getRecord() {
+    String getRecord() {
         return record;
     }
 
-    public void setRecord(String record) {
+    private void setRecord(String record) {
         this.record = record;
     }
 
-    public String getDivision() {
+    String getDivision() {
         return division;
     }
 
-    public void setDivision(String division) {
+    private void setDivision(String division) {
         this.division = division;
     }
 
-    public boolean isActive() {
+    boolean isActive() {
         return isActive;
     }
 
-    public void setActive(boolean active) {
+    private void setActive(boolean active) {
         this.isActive = active;
     }
 
-    public String getHometown() {
+    String getHometown() {
         return hometown;
     }
 
-    public void setHometown(String hometown) {
+    private void setHometown(String hometown) {
         this.hometown = hometown;
     }
 
-    public String getTrainsAt() {
+    String getTrainsAt() {
         return trainsAt;
     }
 
-    public void setTrainsAt(String trainsAt) {
+    private void setTrainsAt(String trainsAt) {
         this.trainsAt = trainsAt;
     }
 
@@ -162,55 +161,55 @@ public class Biography implements Populatefields{
         return fightingStyle;
     }
 
-    public void setFightingStyle(String fightingStyle) {
+    private void setFightingStyle(String fightingStyle) {
         this.fightingStyle = fightingStyle;
     }
 
-    public int getAge() {
+    int getAge() {
         return Age;
     }
 
-    public void setAge(int age) {
+    private void setAge(int age) {
         Age = age;
     }
 
-    public Double getHeightInInches() {
+    Double getHeightInInches() {
         return heightInInches;
     }
 
-    public void setHeightInInches(Double heightInInches) {
+    private void setHeightInInches(Double heightInInches) {
         this.heightInInches = heightInInches;
     }
 
-    public Double getWeight() {
+    Double getWeight() {
         return weight;
     }
 
-    public void setWeight(Double weight) {
+    private void setWeight(Double weight) {
         this.weight = weight;
     }
 
-    public String getOctagonDebut() {
+    String getOctagonDebut() {
         return octagonDebut;
     }
 
-    public void setOctagonDebut(String octagonDebut) {
+    private void setOctagonDebut(String octagonDebut) {
         this.octagonDebut = octagonDebut;
     }
 
-    public Double getReachInInches() {
+    Double getReachInInches() {
         return reachInInches;
     }
 
-    public void setReachInInches(Double reachInInches) {
+    private void setReachInInches(Double reachInInches) {
         this.reachInInches = reachInInches;
     }
 
-    public Double getLegReach() {
+    Double getLegReach() {
         return legReach;
     }
 
-    public void setLegReach(Double legReach) {
+    private void setLegReach(Double legReach) {
         this.legReach = legReach;
     }
 }
