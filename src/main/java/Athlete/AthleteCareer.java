@@ -2,7 +2,9 @@ package Athlete;
 
 import Athlete.StrikeBy.StrikesByPosition;
 import Athlete.StrikeBy.StrikesByTarget;
+import Event.EventInquiry;
 import Event.EventParser;
+import com.google.gson.JsonObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import webScrap.Biography;
@@ -44,6 +46,10 @@ public class AthleteCareer extends Athlete{
         setWinStreak(Integer.parseInt(
                 doc.getElementsByClass("c-record__promoted-figure").first().text()));
         eventParser = new EventParser(doc);
+
+        EventInquiry eventInquiry = new EventInquiry();
+        eventInquiry.FilterByRound("Round1", eventParser.getEventSet()).forEach(
+                element -> System.out.println(eventInquiry.getCorner("Red", (JsonObject) element)));
 
     }
 

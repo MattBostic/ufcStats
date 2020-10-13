@@ -32,12 +32,13 @@ public class EventStatsQuery {
         }
     }
 
-    public String responseBody(){
+    public boolean isValidURI(){
         connect();
-        if(response.statusCode() == 200) {
-            return response.body().toString();
-        }
-        return String.format("error! returned statusCode: %d\n URI: %s", response.statusCode(), response.uri());
+        return response.statusCode() == 200;
+    }
+    public String responseBody(){
+
+        return response.body().toString();
     }
 
 

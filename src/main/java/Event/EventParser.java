@@ -16,19 +16,20 @@ import java.util.ArrayList;
 
 public class EventParser {
     private Document doc;
-    private static final String HTTPS_WWW_UFC_COM = "https://www.ufc.com/";
+    private String athleteBaseURI;
     private String urlPostfix;
     private Gson gson = new Gson();
     private ArrayList<EventResults> events = new ArrayList<>();
 
     public EventParser(Document doc) throws IOException {
         this.doc = doc;
+        athleteBaseURI = doc.baseUri();
         queryEventResults();
     }
 
     private boolean hasMoreEvents(){
-        return doc.getElementsByClass("button").eachAttr("href")
-                .toString().contains("/athlete/");
+        return doc.getElementsByClass("button")
+                .eachAttr("title").contains("Go to next page");
     }
 
     private void setUrlPost() {
@@ -38,9 +39,10 @@ public class EventParser {
 
     private Document queryNextEventPage() throws IOException {
         setUrlPost();
-        return Jsoup.connect(HTTPS_WWW_UFC_COM + urlPostfix).get();
+        return Jsoup.connect(athleteBaseURI + urlPostfix).get();
 
     }
+
     //Older events did not track stats.
     //If recap does not have an eventId we stop parse.
     private boolean recapAvailable(String[] matchId){
@@ -57,12 +59,14 @@ public class EventParser {
                     var href = element.childNode(3).attr("href");
                     if(recapAvailable(getMatchID(href))) {
                         try {
-                            var match = new EventStatsQuery(getEventId(href), getMatchID(href)[1]).responseBody();
-                            var matchJSON = gson.fromJson(
-                                    JsonParser.parseString(match)
-                                            .getAsJsonObject().get("FMLiveFeed"), EventResults.class);
+                            var match = new EventStatsQuery(getEventId(href), getMatchID(href)[1]);
+                            if (match.isValidURI()) {
+                                var matchJSON = gson.fromJson(
+                                        JsonParser.parseString(match.responseBody())
+                                                .getAsJsonObject().get("FMLiveFeed"), EventResults.class);
 
-                            events.add(matchJSON);
+                                events.add(matchJSON);
+                            }
 
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -78,9 +82,13 @@ public class EventParser {
 
     //Query event page to get the EventId form data-drupal-seletor script
     private String getEventId (String href) throws IOException {
+        String HTTPS_WWW_UFC_COM = "https://www.ufc.com/";
+
         var eventDoc = Jsoup.connect(HTTPS_WWW_UFC_COM + href).get();
+
         var eventScript =  eventDoc.body().getElementsByAttributeValue(
                 "data-drupal-selector","drupal-settings-json").dataNodes();
+
         return JsonParser.parseString(String.valueOf(eventScript.get(0)))
                 .getAsJsonObject().get("eventLiveStats")
                 .getAsJsonObject().get("event_fmid").getAsString();
